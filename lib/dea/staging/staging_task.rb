@@ -31,7 +31,7 @@ module Dea
 
     class StagingStackNotFoundError < StagingError; end
 
-    attr_reader :bootstrap, :dir_server, :staging_message, :task_id, :droplet_sha1
+    attr_reader :bootstrap, :dir_server, :staging_message, :task_id, :droplet_sha1, :warden_handle
 
     def initialize(bootstrap, dir_server, staging_message, buildpacks_in_use, custom_logger=nil)
       super(bootstrap.config, custom_logger)
@@ -554,6 +554,7 @@ module Dea
         egress_rules: staging_message.egress_rules,
         rootfs: rootfs,
       )
+      @warden_handle = container.handle
       promises = [promise_app_download]
       promises << promise_buildpack_cache_download if staging_message.buildpack_cache_download_uri
       Promise.run_in_parallel(*promises)
